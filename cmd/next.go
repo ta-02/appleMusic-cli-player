@@ -9,13 +9,15 @@ import (
 
 var nextCmd = &cobra.Command{
 	Use:   "next",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Skip to the next track in Apple Music",
+	Long: `Skip to the next track in Apple Music. This command will check if Apple Music is open,
+and if it is, it will skip to the next track. After skipping, it will display the 
+current song information.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Usage example:
+
+music next
+This will skip the currently playing song and display the new song's information.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		isOpen, err := isMusicOpen()
 		if err != nil {
