@@ -1,35 +1,31 @@
 package cmd
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/andybrewer/mack"
 	"github.com/spf13/cobra"
 )
 
-// pauseCmd represents the pause command
 var pauseCmd = &cobra.Command{
 	Use:   "pause",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Pause playback of music",
+	Long: `Pause command allows you to pause the playback of music using the command line.
+This command sends a pause instruction to control music playback.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		mack.Tell("Music", "Pause")
+		isOpen, err := isMusicOpen()
+		if err != nil {
+			log.Fatalf("Failed to check if Apple Music is open: %v", err)
+		}
+		if !isOpen {
+			fmt.Println("Apple Music is not open nothing to pause!")
+		} else {
+			mack.Tell("Music", "Pause")
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(pauseCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// pauseCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// pauseCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
