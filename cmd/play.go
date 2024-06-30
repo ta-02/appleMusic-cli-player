@@ -77,12 +77,10 @@ var playCmd = &cobra.Command{
 			fmt.Println("No song currently playing.")
 			return
 		}
-
 		fmt.Printf("Now Playing: %s\nBy: %s\n", info.trackName, info.artistName)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(playCmd)
-	// Here you can define flags and configuration settings.
 }
