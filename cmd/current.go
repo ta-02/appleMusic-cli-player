@@ -2,40 +2,69 @@ package cmd
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+
+	"github.com/andybrewer/mack"
 	"github.com/spf13/cobra"
 )
 
 type fullSongInfo struct {
-	trackName  string
-	artistName string
+	trackName     string
+	artistName    string
+	trackDuration float64
+	trackPosition float64
 }
 
-func showCurrent()
+func showCurrent() (fullSongInfo, error) {
+	script := `
+		if player state is playing then
+			set trackName to name of current track
+			set artistName to artist of current track
+			set trackDuration to duration of current track
+			set trackPosition to player position
+			return trackName & "," & artistName & "," & trackDuration & "," & trackPosition
+		end if
+	`
+	result, err := mack.Tell("Music", script)
+	if err != nil {
+		return fullSongInfo{}, fmt.Errorf("error fetching song info: %w", err)
+	}
+	info := strings.Split(result, ",")
+	if len(info) < 4 {
+		return fullSongInfo{}, fmt.Errorf("unexpected result format: %s", result)
+	}
+
+	trackDuration, _ := strconv.ParseFloat(info[2], 64)
+	trackPosition, _ := strconv.ParseFloat(info[3], 64)
+
+	return fullSongInfo{
+		trackName:     info[0],
+		artistName:    info[1],
+		trackDuration: trackDuration,
+		trackPosition: trackPosition,
+	}, nil
+}
 
 var currentCmd = &cobra.Command{
 	Use:   "current",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Displays currently playing song information",
+	Long: `Displays information about the song currently playing in the default music player.
+	
+	Example:
+	  musicapp current`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("current called")
+		info, err := showCurrent()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Printf("Now Playing: %s\n", info.trackName)
+		fmt.Printf("Artist: %s\n", info.artistName)
+		fmt.Printf("Time: %f / %f\n", info.trackPosition, info.trackDuration)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(currentCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// currentCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// currentCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

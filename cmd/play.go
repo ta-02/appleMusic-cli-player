@@ -2,9 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"strings"
+
 	"github.com/andybrewer/mack"
 	"github.com/spf13/cobra"
-	"strings"
 )
 
 type songInfo struct {
@@ -18,8 +20,6 @@ func getCurrentSongInfo() (songInfo, error) {
 			set trackName to name of current track
 			set artistName to artist of current track
 			return trackName & "," & artistName
-		else
-			return ""
 		end if
 	`
 	result, err := mack.Tell("Music", script)
@@ -27,46 +27,62 @@ func getCurrentSongInfo() (songInfo, error) {
 		return songInfo{}, fmt.Errorf("error fetching song info: %w", err)
 	}
 	info := strings.Split(result, ",")
+	if len(info) < 2 {
+		return songInfo{}, nil // No song currently playing
+	}
 	return songInfo{
 		trackName:  info[0],
 		artistName: info[1],
 	}, nil
 }
 
-func playMusic() {
-	mack.Tell("Music", "play")
+func isMusicOpen() (bool, error) {
+	script := `
+		if it is running then
+			return true
+		else
+			return false
+		end if
+	`
+	result, err := mack.Tell("Music", script)
+	if err != nil {
+		return false, fmt.Errorf("error checking if Apple Music is open: %w", err)
+	}
+	return result == "true", nil
 }
 
-// playCmd represents the play command
 var playCmd = &cobra.Command{
 	Use:   "play",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Play current song in Apple Music",
+	Long: `Plays the current song in Apple Music. 
+	If Apple Music is not open, it will be launched.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		playMusic()
+		isOpen, err := isMusicOpen()
+		if err != nil {
+			log.Fatalf("Failed to check if Apple Music is open: %v", err)
+		}
+
+		if !isOpen {
+			mack.Tell("Music", "run")
+		}
+
+		mack.Tell("Music", "Play")
 		info, err := getCurrentSongInfo()
 		if err != nil {
-			fmt.Println(err)
+			log.Printf("Error getting current song info: %v", err)
+			return
 		}
-		fmt.Printf("Now Playing: %s \nBy: %s \n", info.trackName, info.artistName)
+
+		if info.trackName == "" {
+			fmt.Println("No song currently playing.")
+			return
+		}
+
+		fmt.Printf("Now Playing: %s\nBy: %s\n", info.trackName, info.artistName)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(playCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// playCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// playCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// Here you can define flags and configuration settings.
 }
