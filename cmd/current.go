@@ -56,7 +56,7 @@ var currentCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		info, err := showCurrent()
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Nothing is currently playing")
 			return
 		}
 		fmt.Printf("Now Playing: %s\n", info.trackName)
