@@ -28,23 +28,24 @@ to quickly create a Cobra application.`,
 			return
 		}
 
-		if _, err := mack.Tell("Music"); err != nil {
+		if _, err := mack.Tell("Music", "next track"); err != nil {
 			fmt.Println("Error skipping the song:", err)
 		}
 
+		info, err := getCurrentSongInfo()
+		if err != nil {
+			fmt.Printf("Error getting current song info: %v", err)
+			return
+		}
+
+		if info.trackName == "" {
+			fmt.Println("Song Skipped")
+			return
+		}
+		fmt.Printf("Now Playing: %s\nBy: %s\n", info.trackName, info.artistName)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(nextCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// nextCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// nextCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
