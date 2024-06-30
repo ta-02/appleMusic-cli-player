@@ -12,8 +12,8 @@ import (
 type fullSongInfo struct {
 	trackName     string
 	artistName    string
-	trackDuration float64
-	trackPosition float64
+	trackDuration string
+	trackPosition string
 }
 
 func showCurrent() (fullSongInfo, error) {
@@ -38,11 +38,17 @@ func showCurrent() (fullSongInfo, error) {
 	trackDuration, _ := strconv.ParseFloat(info[2], 64)
 	trackPosition, _ := strconv.ParseFloat(info[3], 64)
 
+	durationMin := int(trackDuration / 60)
+	durationSec := int(trackDuration) % 60
+
+	positionMin := int(trackPosition / 60)
+	positionSec := int(trackPosition) % 60
+
 	return fullSongInfo{
 		trackName:     info[0],
 		artistName:    info[1],
-		trackDuration: trackDuration,
-		trackPosition: trackPosition,
+		trackDuration: fmt.Sprintf("%d:%02d", durationMin, durationSec),
+		trackPosition: fmt.Sprintf("%d:%02d", positionMin, positionSec),
 	}, nil
 }
 
@@ -61,7 +67,7 @@ var currentCmd = &cobra.Command{
 		}
 		fmt.Printf("Now Playing: %s\n", info.trackName)
 		fmt.Printf("Artist: %s\n", info.artistName)
-		fmt.Printf("Time: %f / %f\n", info.trackPosition, info.trackDuration)
+		fmt.Printf("Time: %s / %s\n", info.trackPosition, info.trackDuration)
 	},
 }
 
