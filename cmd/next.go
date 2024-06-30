@@ -1,16 +1,12 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
 	"fmt"
 
+	"github.com/andybrewer/mack"
 	"github.com/spf13/cobra"
 )
 
-// nextCmd represents the next command
 var nextCmd = &cobra.Command{
 	Use:   "next",
 	Short: "A brief description of your command",
@@ -21,7 +17,21 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("next called")
+		isOpen, err := isMusicOpen()
+		if err != nil {
+			fmt.Println("Error checking if Apple Music is open:", err)
+			return
+		}
+
+		if !isOpen {
+			fmt.Println("Apple Music is not open!")
+			return
+		}
+
+		if _, err := mack.Tell("Music"); err != nil {
+			fmt.Println("Error skipping the song:", err)
+		}
+
 	},
 }
 

@@ -20,7 +20,7 @@ This will set the Apple Music volume to 50%.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		input := args[0]
 		vol, err := strconv.Atoi(input)
-		if err != nil || vol < 1 || vol > 100 {
+		if err != nil || vol < 0 || vol > 100 {
 			fmt.Println("Please enter a number from 1-100")
 			return
 		}
