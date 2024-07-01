@@ -23,6 +23,21 @@ func showPlaylist() ([]string, error) {
 	return playlistNames, nil
 }
 
+func playPlaylist(playlist string) error {
+	fmt.Printf("Attempting to play playlist: '%s'\n", playlist)
+	script := fmt.Sprintf(`play playlist "%s"`, escapeQuotes(playlist))
+	result, err := mack.Tell("Music", script)
+	if err != nil {
+		return fmt.Errorf("error playing the playlist: %w", err)
+	}
+	fmt.Printf("Result from AppleScript: %s\n", result)
+	return nil
+}
+
+func escapeQuotes(s string) string {
+	return strings.ReplaceAll(s, `"`, `\"`)
+}
+
 var playlistsCmd = &cobra.Command{
 	Use:   "playlists",
 	Short: "A brief description of your command",
@@ -59,7 +74,6 @@ to quickly create a Cobra application.`,
 
 			fzfCmd := exec.Command("fzf")
 			fzfCmd.Stdin = strings.NewReader(strings.Join(playlistNames, "\n"))
-			// fzfCmd.Stdout = os.Stdout
 			fzfCmd.Stderr = os.Stderr
 
 			playlistBytes, err := fzfCmd.Output()
@@ -69,7 +83,24 @@ to quickly create a Cobra application.`,
 			}
 
 			selectedPlaylist := strings.TrimSpace(string(playlistBytes))
-			fmt.Println("Selected Playlist:", selectedPlaylist)
+			errr := playPlaylist(selectedPlaylist)
+			if errr != nil {
+				fmt.Println("Error playing the chosen playlist:", err)
+				return
+			}
+			fmt.Println("%s has been played", selectedPlaylist)
+			info, err := getCurrentSongInfo()
+			if err != nil {
+				fmt.Printf("Error getting current song info: %v", err)
+				return
+			}
+
+			if info.trackName == "" {
+				fmt.Println("Song Skipped")
+				return
+			}
+			fmt.Printf("Now Playing: %s\nBy: %s\n", info.trackName, info.artistName)
+
 		} else {
 			return
 		}
