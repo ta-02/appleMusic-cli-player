@@ -24,13 +24,12 @@ func showPlaylist() ([]string, error) {
 }
 
 func playPlaylist(playlist string) error {
-	fmt.Printf("Attempting to play playlist: '%s'\n", playlist)
-	script := fmt.Sprintf(`play playlist "%s"`, escapeQuotes(playlist))
-	result, err := mack.Tell("Music", script)
+	fmt.Printf("Attempting to play playlist: %s \n", playlist)
+	script := fmt.Sprintf(`play playlist named "%s"`, playlist)
+	_, err := mack.Tell("Music", script)
 	if err != nil {
 		return fmt.Errorf("error playing the playlist: %w", err)
 	}
-	fmt.Printf("Result from AppleScript: %s\n", result)
 	return nil
 }
 
