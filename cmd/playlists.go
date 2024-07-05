@@ -87,7 +87,7 @@ to quickly create a Cobra application.`,
 				fmt.Println("Error playing the chosen playlist:", err)
 				return
 			}
-			fmt.Println("%s has been played", selectedPlaylist)
+			fmt.Printf("%s has been played\n", selectedPlaylist)
 			info, err := getCurrentSongInfo()
 			if err != nil {
 				fmt.Printf("Error getting current song info: %v", err)
