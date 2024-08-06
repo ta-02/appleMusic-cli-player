@@ -16,7 +16,7 @@ var volumeCmd = &cobra.Command{
 music volume 50
 This will set the Apple Music volume to 50%.`,
 
-	Args: cobra.ExactArgs(1),
+	Args: cobra.RangeArgs(0, 1),
 	Run: func(cmd *cobra.Command, args []string) {
 		input := args[0]
 		vol, err := strconv.Atoi(input)
