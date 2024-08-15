@@ -48,6 +48,8 @@ var playCmd = &cobra.Command{
 		// Convert the image to ASCII
 		convertOptions := convert.DefaultOptions
 		converter := convert.NewImageConverter()
+		convertOptions.FixedWidth = 40
+		convertOptions.FixedHeight = 20
 		asciiArt := converter.ImageFile2ASCIIString("scripts/tmp.jpg", &convertOptions)
 
 		// Print the ASCII art
