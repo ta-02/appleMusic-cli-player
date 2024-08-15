@@ -3,8 +3,10 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os/exec"
 
 	"github.com/andybrewer/mack"
+	"github.com/qeesung/image2ascii/convert"
 	"github.com/spf13/cobra"
 )
 
@@ -35,6 +37,21 @@ var playCmd = &cobra.Command{
 			return
 		}
 		fmt.Printf("Now Playing: %s\nBy: %s\n", info.trackName, info.artistName)
+
+		// Run the AppleScript to get the album art
+		newCmd := exec.Command("osascript", "scripts/get_album_art.scpt")
+		err = newCmd.Run()
+		if err != nil {
+			log.Fatalf("Failed to run AppleScript: %v", err)
+		}
+
+		// Convert the image to ASCII
+		convertOptions := convert.DefaultOptions
+		converter := convert.NewImageConverter()
+		asciiArt := converter.ImageFile2ASCIIString("scripts/tmp.jpg", &convertOptions)
+
+		// Print the ASCII art
+		fmt.Println(asciiArt)
 	},
 }
 
