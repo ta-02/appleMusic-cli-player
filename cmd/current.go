@@ -9,13 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type fullSongInfo struct {
-	trackName     string
-	artistName    string
-	trackDuration string
-	trackPosition string
-}
-
 func showCurrent() (fullSongInfo, error) {
 	script := `
 		if player state is playing then

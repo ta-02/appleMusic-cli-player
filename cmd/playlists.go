@@ -33,10 +33,6 @@ func playPlaylist(playlist string) error {
 	return nil
 }
 
-func escapeQuotes(s string) string {
-	return strings.ReplaceAll(s, `"`, `\"`)
-}
-
 var playlistsCmd = &cobra.Command{
 	Use:   "playlists",
 	Short: "A brief description of your command",
@@ -87,6 +83,7 @@ to quickly create a Cobra application.`,
 				fmt.Println("Error playing the chosen playlist:", err)
 				return
 			}
+
 			fmt.Printf("%s has been played\n", selectedPlaylist)
 			info, err := getCurrentSongInfo()
 			if err != nil {

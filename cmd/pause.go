@@ -18,11 +18,13 @@ This command sends a pause instruction to control music playback.`,
 		if err != nil {
 			log.Fatalf("Failed to check if Apple Music is open: %v", err)
 		}
+
 		if !isOpen {
 			fmt.Println("Apple Music is not open nothing to pause!")
-		} else {
-			mack.Tell("Music", "Pause")
+			return
 		}
+
+		mack.Tell("Music", "Pause")
 	},
 }
 
