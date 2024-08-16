@@ -1,5 +1,7 @@
 <h1 align="center">appleMusic-cli-player</h1>
 
+<img width="622" alt="image" src="https://github.com/user-attachments/assets/e93089ac-8bfb-4c91-ad2e-ce7d80420994">
+
 <h3 align="center">Control your music directly from the terminal</h3>
 
 ## Overview
